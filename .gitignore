@@ -1,0 +1,17 @@
+# 依赖与构建产物
+node_modules/
+dist/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# 本地生成文件
+.codegraph/
+*.local
+
+# 日志与系统文件
+*.log
+.DS_Store

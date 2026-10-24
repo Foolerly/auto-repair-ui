@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <rect width="480" height="360" fill="#ffedd5"/>
+  <rect x="14" y="14" width="452" height="332" rx="14" fill="none" stroke="#fb923c" stroke-width="3"/>
+  <text x="240" y="178" text-anchor="middle" font-family="'Microsoft YaHei', Arial, sans-serif" font-size="52" font-weight="bold" fill="#9a3412">大灯</text>
+  <text x="240" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#ea580c">Headlight</text>
+</svg>

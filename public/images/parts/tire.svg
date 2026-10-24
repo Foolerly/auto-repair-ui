@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360">
+  <rect width="480" height="360" fill="#e5e7eb"/>
+  <rect x="14" y="14" width="452" height="332" rx="14" fill="none" stroke="#9ca3af" stroke-width="3"/>
+  <text x="240" y="178" text-anchor="middle" font-family="'Microsoft YaHei', Arial, sans-serif" font-size="52" font-weight="bold" fill="#1f2937">轮胎</text>
+  <text x="240" y="224" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#6b7280">Tire</text>
+</svg>
