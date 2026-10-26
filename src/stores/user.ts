@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
   const savedToken = localStorage.getItem('token') || '';
@@ -9,13 +9,21 @@ export const useUserStore = defineStore('user', () => {
 
   const token = ref(savedToken);
   const userInfo = ref<any>(savedUser);
+  const roles = computed<string[]>(() => userInfo.value?.roles ?? []);
+  const permissions = computed<string[]>(() => userInfo.value?.permissions ?? []);
 
   function login(data: any) {
     userInfo.value = data;
     token.value = data.token || '';
     if (token.value) {
       localStorage.setItem('token', token.value);
-      localStorage.setItem('userInfo', JSON.stringify({ id: data.id, username: data.username, realName: data.realName }));
+      localStorage.setItem('userInfo', JSON.stringify({
+        id: data.id,
+        username: data.username,
+        realName: data.realName,
+        roles: data.roles ?? [],
+        permissions: data.permissions ?? [],
+      }));
     }
   }
 
@@ -26,5 +34,15 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('userInfo');
   }
 
-  return { token, userInfo, login, logout };
+  function hasRole(role: string) {
+    return roles.value.includes(role);
+  }
+
+  function hasPermission(code?: string) {
+    if (!code) return true;
+    if (hasRole('ROLE_ADMIN')) return true;
+    return permissions.value.includes(code);
+  }
+
+  return { token, userInfo, roles, permissions, login, logout, hasRole, hasPermission };
 });

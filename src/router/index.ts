@@ -1,4 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { ElMessage } from 'element-plus';
+
+const ROUTE_PERMISSIONS: Record<string, string> = {
+  '/customer': 'customer:manage',
+  '/vehicle': 'vehicle:manage',
+  '/work-order': 'workorder:manage',
+  '/requisition': 'workorder:manage',
+  '/payment': 'payment:manage',
+  '/part-category': 'part:category',
+  '/part': 'part:info',
+  '/vehicle-model': 'part:info',
+  '/stock-check': 'part:info',
+  '/part-scrap': 'part:info',
+  '/stock-flow': 'part:info',
+  '/supplier': 'supplier:manage',
+  '/purchase-catalog': 'purchase:manage',
+  '/purchase-request': 'purchase:manage',
+  '/purchase-order': 'purchase:manage',
+  '/purchase-return': 'purchase:manage',
+  '/purchase-reconciliation': 'purchase:manage',
+  '/user': 'system:user',
+  '/role': 'system:role',
+};
 
 const router = createRouter({
   history: createWebHistory(),
@@ -70,13 +93,41 @@ router.beforeEach((to, _from, next) => {
     return;
   }
   // 管理后台路由
-  if (to.name !== 'Login' && !token) {
-    next('/login');
-  } else if (to.name === 'Login' && token) {
-    next('/dashboard');
-  } else {
-    next();
+  if (to.name === 'Login') {
+    if (token) {
+      next('/dashboard');
+    } else {
+      next();
+    }
+    return;
   }
+  if (!token) {
+    next('/login');
+    return;
+  }
+
+  let userInfo: any = null;
+  try {
+    userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+  } catch {
+    userInfo = null;
+  }
+  const roles: string[] = userInfo?.roles || [];
+  const permissions: string[] = userInfo?.permissions || [];
+  if (roles.length === 0) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
+    next('/login');
+    return;
+  }
+
+  const required = ROUTE_PERMISSIONS[to.path];
+  if (required && !roles.includes('ROLE_ADMIN') && !permissions.includes(required)) {
+    ElMessage.warning('没有访问该页面的权限');
+    next('/dashboard');
+    return;
+  }
+  next();
 });
 
 export default router;

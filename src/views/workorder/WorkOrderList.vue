@@ -52,9 +52,9 @@
         <el-form-item label="维修内容"><el-input v-model="form.repairContent" type="textarea" :rows="2" /></el-form-item>
         <el-row :gutter="12">
           <el-col :span="8"><el-form-item label="工时费"><el-input-number v-model="form.laborFee" :precision="2" /></el-form-item></el-col>
-          <el-col :span="8"><el-form-item label="总金额"><el-input-number v-model="form.totalAmount" :precision="2" /></el-form-item></el-col>
+          <el-col :span="8"><el-form-item label="总金额"><el-input-number v-model="form.totalAmount" :precision="2" disabled /></el-form-item></el-col>
           <el-col :span="8"><el-form-item label="状态">
-            <el-select v-model="form.workOrderStatus" :disabled="!isEdit">
+            <el-select v-model="form.workOrderStatus" disabled>
               <el-option label="待诊断" :value="0" /><el-option label="诊断中" :value="1" /><el-option label="待确认" :value="2" /><el-option label="待维修" :value="3" /><el-option label="维修中" :value="4" /><el-option label="待结算" :value="5" /><el-option label="已完成" :value="6" /><el-option label="已取消" :value="7" />
             </el-select>
           </el-form-item></el-col>
@@ -94,7 +94,7 @@
       <el-form :model="quoteForm" label-width="90px">
         <el-form-item label="工时费"><el-input-number v-model="quoteForm.laborFee" :precision="2" :min="0" /></el-form-item>
         <el-form-item label="配件费"><el-input-number v-model="quoteForm.partsFee" :precision="2" :min="0" /></el-form-item>
-        <el-form-item label="总金额"><el-input-number v-model="quoteForm.totalAmount" :precision="2" :min="0" /></el-form-item>
+        <el-form-item label="总金额"><el-input-number v-model="quoteForm.totalAmount" :precision="2" :min="0" disabled /></el-form-item>
         <el-form-item label="备注"><el-input v-model="quoteForm.remark" /></el-form-item>
       </el-form>
       <template #footer>
@@ -187,10 +187,11 @@ async function handleCancel(id: number) {
   await updateStatus(id, 7);
 }
 
-function openDialog(row?: any) {
+async function openDialog(row?: any) {
   isEdit.value = !!row;
   if (row) {
-    Object.assign(form, { ...row, parts: row.parts ? [...row.parts] : [] });
+    const res = await request.get(`/api/work-order/${row.id}`);
+    Object.assign(form, { ...res.data, parts: res.data?.parts ? [...res.data.parts] : [] });
   } else {
     Object.assign(form, { orderNo:'', customerId:null, vehicleId:null, technicianId:null, faultDescription:'', repairContent:'', workOrderStatus:0, laborFee:0, totalAmount:0, remark:'', parts: [] });
   }

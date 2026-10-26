@@ -39,9 +39,9 @@
           <el-input :model-value="form.orderNo" disabled placeholder="保存后自动生成" />
         </el-form-item>
         <el-form-item label="供应商ID" required><el-input-number v-model="form.supplierId" /></el-form-item>
-        <el-form-item label="总金额"><el-input-number v-model="form.totalAmount" :precision="2" /></el-form-item>
+        <el-form-item label="总金额"><el-input-number v-model="form.totalAmount" :precision="2" disabled /></el-form-item>
         <el-form-item label="状态">
-          <el-select v-model="form.orderStatus" :disabled="!isEdit">
+          <el-select v-model="form.orderStatus" disabled>
             <el-option label="待审核" :value="0" /><el-option label="已审核" :value="1" /><el-option label="已入库" :value="2" /><el-option label="已取消" :value="3" />
           </el-select>
         </el-form-item>
@@ -151,10 +151,11 @@ async function handleCancel(id: number) {
   fetchData();
 }
 
-function openDialog(row?: any) {
+async function openDialog(row?: any) {
   isEdit.value = !!row;
   if (row) {
-    Object.assign(form, { ...row, items: row.items ? [...row.items] : [] });
+    const res = await request.get(`/api/purchase-order/${row.id}`);
+    Object.assign(form, { ...res.data, items: res.data?.items ? [...res.data.items] : [] });
   } else {
     Object.assign(form, { orderNo:'', supplierId:null, totalAmount:0, orderStatus:0, estimateArrivalTime:'', actualArrivalTime:'', purchaserId:null, remark:'', items: [] });
   }

@@ -14,38 +14,38 @@
           <div class="app-menu-group">总览</div>
           <el-menu-item index="/dashboard"><el-icon><Odometer /></el-icon><span>工作台</span></el-menu-item>
 
-          <div class="app-menu-group">业务中心</div>
-          <el-menu-item index="/customer"><el-icon><UserFilled /></el-icon><span>客户管理</span></el-menu-item>
-          <el-menu-item index="/vehicle"><el-icon><Van /></el-icon><span>车辆管理</span></el-menu-item>
-          <el-menu-item index="/work-order"><el-icon><Document /></el-icon><span>维修工单</span></el-menu-item>
-          <el-menu-item index="/requisition"><el-icon><TakeawayBox /></el-icon><span>领料管理</span></el-menu-item>
-          <el-menu-item index="/payment"><el-icon><Money /></el-icon><span>收款管理</span></el-menu-item>
+          <div class="app-menu-group" v-if="showBusiness">业务中心</div>
+          <el-menu-item v-if="can('customer:manage')" index="/customer"><el-icon><UserFilled /></el-icon><span>客户管理</span></el-menu-item>
+          <el-menu-item v-if="can('vehicle:manage')" index="/vehicle"><el-icon><Van /></el-icon><span>车辆管理</span></el-menu-item>
+          <el-menu-item v-if="can('workorder:manage')" index="/work-order"><el-icon><Document /></el-icon><span>维修工单</span></el-menu-item>
+          <el-menu-item v-if="can('workorder:manage')" index="/requisition"><el-icon><TakeawayBox /></el-icon><span>领料管理</span></el-menu-item>
+          <el-menu-item v-if="can('payment:manage')" index="/payment"><el-icon><Money /></el-icon><span>收款管理</span></el-menu-item>
 
-          <div class="app-menu-group">配件与采购</div>
-          <el-sub-menu index="parts">
+          <div class="app-menu-group" v-if="showParts || showPurchase">配件与采购</div>
+          <el-sub-menu v-if="showParts" index="parts">
             <template #title><el-icon><Box /></el-icon><span>配件管理</span></template>
-            <el-menu-item index="/part-category">配件分类</el-menu-item>
-            <el-menu-item index="/part">配件库存</el-menu-item>
-            <el-menu-item index="/vehicle-model">车型管理</el-menu-item>
-            <el-menu-item index="/stock-check">库存盘点</el-menu-item>
-            <el-menu-item index="/part-scrap">配件损耗</el-menu-item>
-            <el-menu-item index="/stock-flow">库存流水</el-menu-item>
+            <el-menu-item v-if="can('part:category')" index="/part-category">配件分类</el-menu-item>
+            <el-menu-item v-if="can('part:info')" index="/part">配件库存</el-menu-item>
+            <el-menu-item v-if="can('part:info')" index="/vehicle-model">车型管理</el-menu-item>
+            <el-menu-item v-if="can('part:info')" index="/stock-check">库存盘点</el-menu-item>
+            <el-menu-item v-if="can('part:info')" index="/part-scrap">配件损耗</el-menu-item>
+            <el-menu-item v-if="can('part:info')" index="/stock-flow">库存流水</el-menu-item>
           </el-sub-menu>
-          <el-sub-menu index="purchase">
+          <el-sub-menu v-if="showPurchase" index="purchase">
             <template #title><el-icon><ShoppingCart /></el-icon><span>采购管理</span></template>
-            <el-menu-item index="/supplier">供应商管理</el-menu-item>
-            <el-menu-item index="/purchase-catalog">配件采购</el-menu-item>
-            <el-menu-item index="/purchase-request">采购申请</el-menu-item>
-            <el-menu-item index="/purchase-order">采购订单</el-menu-item>
-            <el-menu-item index="/purchase-return">采购退货</el-menu-item>
-            <el-menu-item index="/purchase-reconciliation">采购对账</el-menu-item>
+            <el-menu-item v-if="can('supplier:manage')" index="/supplier">供应商管理</el-menu-item>
+            <el-menu-item v-if="can('purchase:manage')" index="/purchase-catalog">配件采购</el-menu-item>
+            <el-menu-item v-if="can('purchase:manage')" index="/purchase-request">采购申请</el-menu-item>
+            <el-menu-item v-if="can('purchase:manage')" index="/purchase-order">采购订单</el-menu-item>
+            <el-menu-item v-if="can('purchase:manage')" index="/purchase-return">采购退货</el-menu-item>
+            <el-menu-item v-if="can('purchase:manage')" index="/purchase-reconciliation">采购对账</el-menu-item>
           </el-sub-menu>
 
-          <div class="app-menu-group">系统管理</div>
-          <el-sub-menu index="system">
+          <div class="app-menu-group" v-if="showSystem">系统管理</div>
+          <el-sub-menu v-if="showSystem" index="system">
             <template #title><el-icon><Setting /></el-icon><span>系统设置</span></template>
-            <el-menu-item index="/user">用户管理</el-menu-item>
-            <el-menu-item index="/role">角色权限</el-menu-item>
+            <el-menu-item v-if="can('system:user')" index="/user">用户管理</el-menu-item>
+            <el-menu-item v-if="can('system:role')" index="/role">角色权限</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </div>
@@ -112,6 +112,12 @@ const PAGE_TITLES: Record<string, string> = {
 
 const pageTitle = computed(() => PAGE_TITLES[route.path] || '工作台');
 const menuRef = ref();
+const can = (code: string) => userStore.hasPermission(code);
+const showBusiness = computed(() =>
+  can('customer:manage') || can('vehicle:manage') || can('workorder:manage') || can('payment:manage'));
+const showParts = computed(() => can('part:category') || can('part:info'));
+const showPurchase = computed(() => can('supplier:manage') || can('purchase:manage'));
+const showSystem = computed(() => can('system:user') || can('system:role'));
 
 const GROUP_OF: Record<string, string> = {
   '/part-category': 'parts',
