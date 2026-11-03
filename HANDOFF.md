@@ -31,6 +31,9 @@
 9. 价格体系前端：配件表单/列表增加"批发价"（`sale_price` 显示为"零售价"），
    客户表单/列表增加"客户类型"（零售/批发）；销售开单与工单领件时按所选客户自动带价
    （调 `GET /api/part/resolve-price`），单价仍可手工修改。
+10. H5 配件商城：`src/views/h5/Mall.vue`（浏览、加购、下单）、`src/views/h5/MyOrders.vue`
+    （我的配件订单、在线支付），购物车独立在 `src/stores/mallCart.ts`（与员工端采购车分开）；
+    H5 首页新增"配件商城""配件订单"入口，路由 `/h5/mall`、`/h5/my-orders`。
 
 ## 三、关键决策
 

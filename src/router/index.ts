@@ -75,6 +75,8 @@ const router = createRouter({
         { path: 'order/:id', name: 'H5OrderDetail', component: () => import('../views/h5/OrderDetail.vue') },
         { path: 'quote/:workOrderId', name: 'H5QuoteConfirm', component: () => import('../views/h5/QuoteConfirm.vue') },
         { path: 'payment/:id', name: 'H5Payment', component: () => import('../views/h5/Payment.vue') },
+        { path: 'mall', name: 'H5Mall', component: () => import('../views/h5/Mall.vue') },
+        { path: 'my-orders', name: 'H5MyOrders', component: () => import('../views/h5/MyOrders.vue') },
       ],
     },
   ],

@@ -3,8 +3,8 @@
     <el-form :inline="true" :model="search">
       <el-form-item>
         <el-select v-model="search.status" placeholder="销售状态" clearable>
-          <el-option label="待出库" :value="0" /><el-option label="已出库" :value="1" />
-          <el-option label="已收款" :value="2" /><el-option label="已取消" :value="3" />
+          <el-option label="待付款" :value="0" /><el-option label="待发货" :value="1" />
+          <el-option label="已完成" :value="2" /><el-option label="已取消" :value="3" />
         </el-select>
       </el-form-item>
       <el-form-item><el-button type="primary" @click="fetchData">搜索</el-button></el-form-item>
@@ -26,8 +26,8 @@
       <el-table-column label="操作" width="270" fixed="right">
         <template #default="{row}">
           <el-button size="small" @click="openDialog(row)" :disabled="row.salesStatus!==0">编辑</el-button>
-          <el-button size="small" v-if="row.salesStatus===0" type="success" @click="handleOutbound(row)">出库</el-button>
-          <el-button size="small" v-if="row.salesStatus===1" type="warning" @click="openPayDialog(row)">收款</el-button>
+          <el-button size="small" v-if="row.salesStatus===0" type="warning" @click="openPayDialog(row)">收款</el-button>
+          <el-button size="small" v-if="row.salesStatus===1" type="success" @click="handleOutbound(row)">出库发货</el-button>
           <el-button size="small" v-if="row.salesStatus===0" type="danger" @click="handleCancel(row)">取消</el-button>
           <el-button size="small" v-if="row.salesStatus===3" type="danger" @click="handleDelete(row.id)">删除</el-button>
         </template>
@@ -102,7 +102,7 @@ import request from '../../api';
 
 interface SalesItem { partId: number | null; qty: number; unitPrice: number; }
 
-const STATUS_TEXT: Record<number, string> = { 0: '待出库', 1: '已出库', 2: '已收款', 3: '已取消' };
+const STATUS_TEXT: Record<number, string> = { 0: '待付款', 1: '待发货', 2: '已完成', 3: '已取消' };
 const statusTagType = (s: number) => (s === 2 ? 'success' : s === 3 ? 'info' : s === 1 ? 'warning' : 'primary');
 
 const search = reactive<any>({ page: 1, size: 10, status: null });

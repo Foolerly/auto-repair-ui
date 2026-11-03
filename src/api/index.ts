@@ -112,4 +112,13 @@ export const getVehicles = (customerId: number) => clientRequest.get(`/api/vehic
 export const addVehicle = (data: any) => clientRequest.post('/api/vehicle', data)
 export const createWorkOrderApi = (data: any) => clientRequest.post('/api/work-order', data)
 
+// ===== H5 配件商城 =====
+export const getMallParts = (params?: any) => clientRequest.get('/api/client/parts', { params })
+export const getMallCategories = () => clientRequest.get('/api/client/part-categories')
+export const createClientSalesOrder = (data: any) => clientRequest.post('/api/client/sales-order', data)
+export const getMySalesOrders = () => clientRequest.get('/api/client/sales-orders')
+export const getMySalesOrderDetail = (id: number) => clientRequest.get(`/api/client/sales-orders/${id}`)
+export const payClientSalesOrder = (id: number, paymentMethod: number) =>
+  clientRequest.post(`/api/client/sales-orders/${id}/pay`, { paymentMethod })
+
 export default request;

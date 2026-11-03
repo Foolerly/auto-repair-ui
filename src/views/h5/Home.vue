@@ -36,6 +36,19 @@
         </div>
       </div>
 
+      <div class="home-actions">
+        <div class="home-action" @click="$router.push('/h5/mall')">
+          <span class="home-action-icon teal"><el-icon :size="22"><ShoppingBag /></el-icon></span>
+          <strong>配件商城</strong>
+          <em>选购配件</em>
+        </div>
+        <div class="home-action" @click="$router.push('/h5/my-orders')">
+          <span class="home-action-icon blue"><el-icon :size="22"><List /></el-icon></span>
+          <strong>配件订单</strong>
+          <em>我的购买记录</em>
+        </div>
+      </div>
+
       <section class="home-section">
         <div class="home-section-head">
           <h3>进行中的工单</h3>
