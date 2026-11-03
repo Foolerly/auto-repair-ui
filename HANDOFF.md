@@ -28,6 +28,9 @@
    - 注册即登录（后端返回 token）；付款改走 `clientPay`，不再直连默认实例。
 8. 销售模块页面：`src/views/sales/SalesOrderList.vue`，菜单"配件销售"（权限 `sales:manage`）。
    支持开单、编辑明细、出库、收款、取消/删除；路由 `/sales-order` 已加入 `ROUTE_PERMISSIONS`。
+9. 价格体系前端：配件表单/列表增加"批发价"（`sale_price` 显示为"零售价"），
+   客户表单/列表增加"客户类型"（零售/批发）；销售开单与工单领件时按所选客户自动带价
+   （调 `GET /api/part/resolve-price`），单价仍可手工修改。
 
 ## 三、关键决策
 

@@ -14,6 +14,11 @@
       <el-table-column prop="memberLevel" label="会员" width="80">
         <template #default="{row}">{{ ['普通','银卡','金卡','钻石'][row.memberLevel] }}</template>
       </el-table-column>
+      <el-table-column prop="customerType" label="类型" width="90">
+        <template #default="{row}">
+          <el-tag :type="row.customerType === 1 ? 'warning' : 'info'">{{ row.customerType === 1 ? '批发' : '零售' }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="totalPoints" label="积分" width="80" />
       <el-table-column label="操作" width="160" fixed="right">
         <template #default="{row}">
@@ -32,6 +37,9 @@
         <el-form-item label="地址"><el-input v-model="form.address" /></el-form-item>
         <el-form-item label="会员等级">
           <el-select v-model="form.memberLevel"><el-option label="普通" :value="0" /><el-option label="银卡" :value="1" /><el-option label="金卡" :value="2" /><el-option label="钻石" :value="3" /></el-select>
+        </el-form-item>
+        <el-form-item label="客户类型">
+          <el-select v-model="form.customerType"><el-option label="零售（车主）" :value="0" /><el-option label="批发（同行/修理厂）" :value="1" /></el-select>
         </el-form-item>
         <el-form-item label="积分"><el-input-number v-model="form.totalPoints" /></el-form-item>
         <el-form-item label="备注"><el-input v-model="form.remark" /></el-form-item>
@@ -55,7 +63,7 @@ const total = ref(0);
 const loading = ref(false);
 const dialogVisible = ref(false);
 const isEdit = ref(false);
-const form = reactive({ name:'', phone:'', address:'', memberLevel:0, totalPoints:0, remark:'' });
+const form = reactive({ name:'', phone:'', address:'', memberLevel:0, customerType:0, totalPoints:0, remark:'' });
 
 async function fetchData() {
   loading.value = true;
@@ -67,7 +75,7 @@ async function fetchData() {
 
 function openDialog(row?: any) {
   isEdit.value = !!row;
-  if (row) Object.assign(form, row); else Object.assign(form, { name:'', phone:'', address:'', memberLevel:0, totalPoints:0, remark:'' });
+  if (row) Object.assign(form, row); else Object.assign(form, { name:'', phone:'', address:'', memberLevel:0, customerType:0, totalPoints:0, remark:'' });
   dialogVisible.value = true;
 }
 

@@ -43,7 +43,8 @@
         </el-table-column>
         <el-table-column prop="unit" label="单位" width="60" />
         <el-table-column prop="purchasePrice" label="进价" width="80" />
-        <el-table-column prop="salePrice" label="售价" width="80" />
+        <el-table-column prop="salePrice" label="零售价" width="80" />
+        <el-table-column prop="wholesalePrice" label="批发价" width="80" />
         <el-table-column label="库存" width="90">
           <template #default="{ row }">
             <span :class="{ 'stock-low': row.stockQty <= row.minStockQty }">{{ row.stockQty }}</span>
@@ -76,9 +77,10 @@
             <el-col :span="12"><el-form-item label="规格"><el-input v-model="form.spec" /></el-form-item></el-col>
           </el-row>
           <el-row :gutter="12">
-            <el-col :span="8"><el-form-item label="分类"><el-select v-model="form.categoryId" clearable placeholder="选择分类" style="width:100%"><el-option v-for="c in categories" :key="c.id" :label="categoryOptionLabel(c)" :value="c.id" /></el-select></el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="进价"><el-input-number v-model="form.purchasePrice" :precision="2" :min="0" style="width:100%" /></el-form-item></el-col>
-            <el-col :span="8"><el-form-item label="售价"><el-input-number v-model="form.salePrice" :precision="2" :min="0" style="width:100%" /></el-form-item></el-col>
+            <el-col :span="6"><el-form-item label="分类"><el-select v-model="form.categoryId" clearable placeholder="选择分类" style="width:100%"><el-option v-for="c in categories" :key="c.id" :label="categoryOptionLabel(c)" :value="c.id" /></el-select></el-form-item></el-col>
+            <el-col :span="6"><el-form-item label="进价"><el-input-number v-model="form.purchasePrice" :precision="2" :min="0" style="width:100%" /></el-form-item></el-col>
+            <el-col :span="6"><el-form-item label="零售价"><el-input-number v-model="form.salePrice" :precision="2" :min="0" style="width:100%" /></el-form-item></el-col>
+            <el-col :span="6"><el-form-item label="批发价"><el-input-number v-model="form.wholesalePrice" :precision="2" :min="0" style="width:100%" /></el-form-item></el-col>
           </el-row>
           <el-row :gutter="12">
             <el-col :span="8"><el-form-item label="库存"><el-input-number v-model="form.stockQty" :min="0" style="width:100%" /></el-form-item></el-col>
@@ -113,7 +115,7 @@ const total = ref(0);
 const loading = ref(false);
 const dialogVisible = ref(false);
 const isEdit = ref(false);
-const form = reactive<any>({ partName: '', spec: '', unit: '个', categoryId: null, purchasePrice: 0, salePrice: 0, stockQty: 0, minStockQty: 10, origin: '', suitableModels: '', remark: '', vehicleModelIds: [] });
+const form = reactive<any>({ partName: '', spec: '', unit: '个', categoryId: null, purchasePrice: 0, salePrice: 0, wholesalePrice: 0, stockQty: 0, minStockQty: 10, origin: '', suitableModels: '', remark: '', vehicleModelIds: [] });
 const modelList = ref<any[]>([]);
 
 const categories = ref<any[]>([]);
@@ -168,7 +170,7 @@ async function openDialog(row?: any) {
       // 忽略
     }
   } else {
-    Object.assign(form, { partName: '', spec: '', unit: '个', categoryId: null, purchasePrice: 0, salePrice: 0, stockQty: 0, minStockQty: 10, origin: '', suitableModels: '', remark: '', vehicleModelIds: [] });
+    Object.assign(form, { partName: '', spec: '', unit: '个', categoryId: null, purchasePrice: 0, salePrice: 0, wholesalePrice: 0, stockQty: 0, minStockQty: 10, origin: '', suitableModels: '', remark: '', vehicleModelIds: [] });
   }
   dialogVisible.value = true;
 }

@@ -44,7 +44,7 @@
           <el-input :model-value="form.orderNo" disabled placeholder="保存后自动生成" />
         </el-form-item>
         <el-row :gutter="12">
-          <el-col :span="8"><el-form-item label="客户ID"><el-input-number v-model="form.customerId" /></el-form-item></el-col>
+          <el-col :span="8"><el-form-item label="客户ID"><el-input-number v-model="form.customerId" @change="onCustomerChange" /></el-form-item></el-col>
           <el-col :span="8"><el-form-item label="车辆ID"><el-input-number v-model="form.vehicleId" /></el-form-item></el-col>
           <el-col :span="8"><el-form-item label="技师ID"><el-input-number v-model="form.technicianId" /></el-form-item></el-col>
         </el-row>
@@ -64,7 +64,7 @@
         <el-divider>领用配件</el-divider>
         <el-row :gutter="8" style="margin-bottom:8px">
           <el-col :span="10">
-            <el-select v-model="selectedPartId" placeholder="选择配件" filterable>
+            <el-select v-model="selectedPartId" placeholder="选择配件" filterable @change="onPartChange">
               <el-option v-for="p in partList" :key="p.id" :label="p.partName + ' (库存:' + p.stockQty + ')'" :value="p.id" />
             </el-select>
           </el-col>
@@ -135,15 +135,34 @@ async function fetchPartList() {
   partList.value = res.data || [];
 }
 
-function addPart() {
+async function resolvePartPrice(partId: number, customerId: number | null) {
+  const params: any = { partId };
+  if (customerId != null) params.customerId = customerId;
+  const res: any = await request.get('/api/part/resolve-price', { params });
+  return Number(res.data) || 0;
+}
+
+let pendingPartPrice = 0;
+
+async function onPartChange(id: number) {
+  if (!id) return;
+  pendingPartPrice = await resolvePartPrice(id, form.customerId);
+}
+
+function onCustomerChange() {
+  if (selectedPartId.value) onPartChange(selectedPartId.value);
+}
+
+async function addPart() {
   if (!selectedPartId.value) return;
   const part = partList.value.find((p: any) => p.id === selectedPartId.value);
   if (!part) return;
-  const price = part.salePrice || 0;
+  const price = pendingPartPrice > 0 ? pendingPartPrice : await resolvePartPrice(part.id, form.customerId);
   const qty = selectedPartQty.value;
   form.parts.push({ partId: part.id, qty, unitPrice: price, totalPrice: price * qty });
   selectedPartId.value = null;
   selectedPartQty.value = 1;
+  pendingPartPrice = 0;
 }
 
 async function fetchData() {

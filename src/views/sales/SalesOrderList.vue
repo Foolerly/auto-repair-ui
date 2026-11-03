@@ -42,7 +42,7 @@
           <el-input :model-value="form.orderNo" disabled placeholder="保存后自动生成" />
         </el-form-item>
         <el-row :gutter="12">
-          <el-col :span="8"><el-form-item label="客户ID"><el-input-number v-model="form.customerId" /></el-form-item></el-col>
+          <el-col :span="8"><el-form-item label="客户ID"><el-input-number v-model="form.customerId" @change="onCustomerChange" /></el-form-item></el-col>
           <el-col :span="8"><el-form-item label="总金额"><el-input-number :model-value="totalAmount" :precision="2" disabled /></el-form-item></el-col>
           <el-col :span="8"><el-form-item label="状态">
             <el-input :model-value="STATUS_TEXT[form.salesStatus]" disabled />
@@ -53,7 +53,7 @@
         <el-divider>销售明细</el-divider>
         <el-row :gutter="8" style="margin-bottom:8px">
           <el-col :span="9">
-            <el-select v-model="selectedPartId" placeholder="选择配件" filterable style="width:100%">
+            <el-select v-model="selectedPartId" placeholder="选择配件" filterable style="width:100%" @change="onPartChange">
               <el-option v-for="p in partList" :key="p.id" :label="p.partName + ' (库存:' + p.stockQty + ')'" :value="p.id" />
             </el-select>
           </el-col>
@@ -161,8 +161,29 @@ async function openDialog(row?: any) {
   dialogVisible.value = true;
 }
 
-function addItem() {
+async function resolvePartPrice(partId: number, customerId: number | null) {
+  const params: any = { partId };
+  if (customerId != null) params.customerId = customerId;
+  const res: any = await request.get('/api/part/resolve-price', { params });
+  return Number(res.data) || 0;
+}
+
+async function onPartChange(id: number) {
+  if (!id) return;
+  selectedPrice.value = await resolvePartPrice(id, form.customerId);
+}
+
+async function onCustomerChange() {
+  if (selectedPartId.value) {
+    selectedPrice.value = await resolvePartPrice(selectedPartId.value, form.customerId);
+  }
+}
+
+async function addItem() {
   if (!selectedPartId.value) { ElMessage.warning('请选择配件'); return; }
+  if (!selectedPrice.value) {
+    selectedPrice.value = await resolvePartPrice(selectedPartId.value, form.customerId);
+  }
   const exists = (form.items as SalesItem[]).find(i => i.partId === selectedPartId.value);
   if (exists) {
     exists.qty = Number(exists.qty) + Number(selectedQty.value);
