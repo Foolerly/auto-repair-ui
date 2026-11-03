@@ -27,8 +27,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getOrderDetail } from '../../api'
-import api from '../../api'
+import { getOrderDetail, clientPay } from '../../api'
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()
@@ -50,7 +49,7 @@ onMounted(async () => {
 const handlePay = async () => {
   loading.value = true
   try {
-    await api.post('/api/client/pay', {
+    await clientPay({
       workOrderId: order.value.id,
       paymentMethod: paymentMethod.value
     })

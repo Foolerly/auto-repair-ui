@@ -60,16 +60,56 @@ export function clearCustomer() {
   sessionStorage.removeItem('customer')
 }
 
-export const clientRegister = (data: any) => request.post('/api/client/register', data)
-export const clientLogin = (data: any) => request.post('/api/client/login', data)
-export const getMyOrders = () => request.get('/api/client/orders')
-export const getOrderDetail = (id: number) => request.get(`/api/client/orders/${id}`)
-export const getQuote = (workOrderId: number) => request.get(`/api/quote/work-order/${workOrderId}`)
-export const confirmQuote = (id: number) => request.put(`/api/quote/${id}/confirm`)
-export const rejectQuote = (id: number, remark?: string) => request.put(`/api/quote/${id}/reject`, remark ? { remark } : {})
-export const clientPay = (data: any) => request.post('/api/client/pay', data)
-export const getVehicles = (customerId: number) => request.get(`/api/vehicle/customer/${customerId}`)
-export const addVehicle = (data: any) => request.post('/api/vehicle', data)
-export const createWorkOrderApi = (data: any) => request.post('/api/work-order', data)
+// H5 客户与员工是两套身份，必须用独立实例携带各自的 Token，避免同浏览器互相污染
+const clientRequest = axios.create({
+  timeout: 10000,
+});
+
+clientRequest.interceptors.request.use((config) => {
+  const customer = getCustomer();
+  if (customer?.token) {
+    config.headers.Authorization = `Bearer ${customer.token}`;
+  }
+  return config;
+});
+
+clientRequest.interceptors.response.use(
+  (res) => {
+    const data = res.data;
+    if (data.code !== 200) {
+      ElMessage.error(data.message || '请求失败');
+      return Promise.reject(new Error(data.message));
+    }
+    return data;
+  },
+  (err) => {
+    if (err.response?.status === 401) {
+      clearCustomer();
+      ElMessage.warning('登录已失效，请重新登录');
+      if (window.location.pathname !== '/h5/login') {
+        window.location.href = '/h5/login';
+      }
+      return Promise.reject(err);
+    }
+    if (err.response?.status === 403) {
+      ElMessage.error('没有操作权限');
+      return Promise.reject(err);
+    }
+    ElMessage.error('网络错误：' + err.message);
+    return Promise.reject(err);
+  }
+);
+
+export const clientRegister = (data: any) => clientRequest.post('/api/client/register', data)
+export const clientLogin = (data: any) => clientRequest.post('/api/client/login', data)
+export const getMyOrders = () => clientRequest.get('/api/client/orders')
+export const getOrderDetail = (id: number) => clientRequest.get(`/api/client/orders/${id}`)
+export const getQuote = (workOrderId: number) => clientRequest.get(`/api/quote/work-order/${workOrderId}`)
+export const confirmQuote = (id: number) => clientRequest.put(`/api/quote/${id}/confirm`)
+export const rejectQuote = (id: number, remark?: string) => clientRequest.put(`/api/quote/${id}/reject`, remark ? { remark } : {})
+export const clientPay = (data: any) => clientRequest.post('/api/client/pay', data)
+export const getVehicles = (customerId: number) => clientRequest.get(`/api/vehicle/customer/${customerId}`)
+export const addVehicle = (data: any) => clientRequest.post('/api/vehicle', data)
+export const createWorkOrderApi = (data: any) => clientRequest.post('/api/work-order', data)
 
 export default request;
