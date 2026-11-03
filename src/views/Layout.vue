@@ -20,6 +20,7 @@
           <el-menu-item v-if="can('workorder:manage')" index="/work-order"><el-icon><Document /></el-icon><span>维修工单</span></el-menu-item>
           <el-menu-item v-if="can('workorder:manage')" index="/requisition"><el-icon><TakeawayBox /></el-icon><span>领料管理</span></el-menu-item>
           <el-menu-item v-if="can('payment:manage')" index="/payment"><el-icon><Money /></el-icon><span>收款管理</span></el-menu-item>
+          <el-menu-item v-if="can('sales:manage')" index="/sales-order"><el-icon><ShoppingBag /></el-icon><span>配件销售</span></el-menu-item>
 
           <div class="app-menu-group" v-if="showParts || showPurchase">配件与采购</div>
           <el-sub-menu v-if="showParts" index="parts">
@@ -105,6 +106,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/work-order': '维修工单',
   '/requisition': '领料管理',
   '/payment': '收款管理',
+  '/sales-order': '配件销售',
   '/stock-flow': '库存流水',
   '/stock-check': '库存盘点',
   '/part-scrap': '配件损耗',
@@ -114,7 +116,7 @@ const pageTitle = computed(() => PAGE_TITLES[route.path] || '工作台');
 const menuRef = ref();
 const can = (code: string) => userStore.hasPermission(code);
 const showBusiness = computed(() =>
-  can('customer:manage') || can('vehicle:manage') || can('workorder:manage') || can('payment:manage'));
+  can('customer:manage') || can('vehicle:manage') || can('workorder:manage') || can('payment:manage') || can('sales:manage'));
 const showParts = computed(() => can('part:category') || can('part:info'));
 const showPurchase = computed(() => can('supplier:manage') || can('purchase:manage'));
 const showSystem = computed(() => can('system:user') || can('system:role'));

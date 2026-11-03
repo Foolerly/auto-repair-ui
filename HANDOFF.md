@@ -26,6 +26,8 @@
    - 新增 H5 专用 axios 实例，使用 `sessionStorage.customer.token`，与员工端 `localStorage.token` 隔离；
    - 客户端 401 跳 `/h5/login`，员工端 401 仍跳 `/login`；
    - 注册即登录（后端返回 token）；付款改走 `clientPay`，不再直连默认实例。
+8. 销售模块页面：`src/views/sales/SalesOrderList.vue`，菜单"配件销售"（权限 `sales:manage`）。
+   支持开单、编辑明细、出库、收款、取消/删除；路由 `/sales-order` 已加入 `ROUTE_PERMISSIONS`。
 
 ## 三、关键决策
 
